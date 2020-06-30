@@ -1,0 +1,189 @@
+<html>
+<header>
+    <title>control dobot</title>
+
+<style>
+.bigbutton {
+
+  display: inline-block;
+  padding: 15px 32px;
+  font-size: 16px;
+  margin: 4px 2px;
+  cursor: pointer;
+}
+</style>
+
+<script type="text/javascript">
+
+    var jogCmd = function(isJoint,cmd){
+        console.log(isJoint,cmd)
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "/jog?isJoint="+isJoint+"&cmd="+cmd, true);
+        xhttp.send();
+    }
+    
+    var moveIncCmd = function(x,y,z,r){
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "/moveinc?x="+x+"&y="+y+"&z="+z+"&r="+r, true);
+        xhttp.send();
+    }
+    
+    var moveEMotor = function(speed,dist){
+        console.log(speed,dist)
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "emotor?index=0&isEnabled=1&speed="+speed+"&distance="+dist, true);
+        xhttp.send();
+    }
+    
+    var ioFunc  = function(index, mode, level){
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "io?index="+index+"&mode="+mode+"&level="+level, true);
+        xhttp.send();
+    }
+    
+    var home = function(){
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "home?x=200&y=0&z=25&r=0", true);
+        xhttp.send();
+    }
+    var test = function(id){
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "test?testID="+id, true);
+        xhttp.send();
+    }
+    var laserCali = function(mode){
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "lasercali?mode="+mode, true);
+        xhttp.send();
+    }
+    var startpaste = function(){
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "pasteDispense", true);
+        xhttp.send();
+    }
+    var breakpaste = function(){
+        var xhttp = new XMLHttpRequest();
+        xhttp.open("GET", "stopPasteDispense", true);
+        xhttp.send();
+    }
+    
+    var getPose = function(){
+        var xhttp = new XMLHttpRequest();
+        xhttp.onreadystatechange = function() {
+            if (this.readyState == 4 && this.status == 200) {
+               // Typical action to be performed when the document is ready:
+               document.getElementById("pose_info").innerHTML = xhttp.responseText;
+            }
+        };
+        xhttp.open("GET", "pose", true);
+        xhttp.send();
+    }
+
+</script>
+
+</header>
+<body>
+Hello world
+<br>
+<table style="width:100%">
+  <tr>
+    <th>
+      <div style="border: 1px solid black;">
+        Jog buttons
+        <br>
+        <button class="bigbutton" onmousedown="jogCmd(0,1)" onmouseup="jogCmd(0,0)">JOG X+</button>
+        <button class="bigbutton" onmousedown="jogCmd(0,2)" onmouseup="jogCmd(0,0)">JOG X-</button>
+        <br>
+        <button class="bigbutton" onmousedown="jogCmd(0,3)" onmouseup="jogCmd(0,0)">JOG Y+</button>
+        <button class="bigbutton" onmousedown="jogCmd(0,4)" onmouseup="jogCmd(0,0)">JOG Y-</button>
+        <br>
+        <button class="bigbutton" onmousedown="jogCmd(0,5)" onmouseup="jogCmd(0,0)">JOG Z+</button>
+        <button class="bigbutton" onmousedown="jogCmd(0,6)" onmouseup="jogCmd(0,0)">JOG Z-</button>
+      </div>
+    </th>
+    <th>
+      <div style="border: 1px solid black;">
+        Small step buttons
+        <br>
+        <button class="bigbutton" onmousedown="moveIncCmd(0.2,0,0,0)">INC X+</button>
+        <button class="bigbutton" onmousedown="moveIncCmd(-0.2,0,0,0)">INC X-</button>
+        <br>
+        <button class="bigbutton" onmousedown="moveIncCmd(0,0.2,0,0)">INC Y+</button>
+        <button class="bigbutton" onmousedown="moveIncCmd(0,-0.2,0,0)">INC Y-</button>
+        <br>
+        <button class="bigbutton" onmousedown="moveIncCmd(0,0,0.2,0)">INC Z+</button>
+        <button class="bigbutton" onmousedown="moveIncCmd(0,0,-0.2,0)">INC Z-</button>
+      </div>
+    </th>
+  </tr>
+</table>
+<table style="width:100%">
+  <tr>
+    <th>
+      <div style="border: 1px solid black;">
+        External Stepper buttons
+        <br>
+        <button class="bigbutton" onmousedown="moveEMotor(-10000,2000)">Motor Down</button>
+        <button class="bigbutton" onmousedown="moveEMotor(10000,2000)">Motor UP</button>
+        <button class="bigbutton" onmousedown="moveEMotor(-25000,500)">Motor Down fast and small (for end)</button>
+        <button class="bigbutton" onmousedown="moveEMotor(500,500)">Motor UP small (for end)</button>
+        <br>
+        <button class="bigbutton" onmousedown="moveEMotor(500,3000)">Motor slow back refill</button>
+        <button class="bigbutton" onmousedown="moveEMotor(-500,20)">Motor push 20</button>
+      </div>
+    </th>
+    <th>
+      <div style="border: 1px solid black;">
+        dispense paste
+        <br>
+        <button class="bigbutton" onmousedown="startpaste()">Start</button>
+        <button class="bigbutton" onmousedown="breakpaste()">Break</button>
+      </div>     
+    </th>
+  </tr>
+</table>      
+      
+
+
+<br>
+<table style="width:100%">
+  <tr>
+    <th>
+      <div style="border: 1px solid black;">
+        Set IO 2
+        <br>
+        <button class="bigbutton" onmousedown="ioFunc(2,1,1)">Heat</button>
+        <button class="bigbutton" onmousedown="ioFunc(2,1,0)">No Heat</button>
+      </div>
+    </th>
+    <th>
+      <div style="border: 1px solid black;">
+        Laser Calibrate
+        <br>
+        <button class="bigbutton" onmousedown="laserCali(0)">Clear Calibration</button>
+        <button class="bigbutton" onmousedown="laserCali(1)">XYZ Cali laser</button>
+        <button class="bigbutton" onmousedown="laserCali(2)">Z sensor prep</button>
+        <button class="bigbutton" onmousedown="laserCali(3)">Z Cali sensor</button>
+        <button class="bigbutton" onmousedown="laserCali(4)">Z pos test</button>
+      </div>
+    </th>
+  </tr>
+</table>
+
+
+
+
+
+
+
+
+<p id="pose_info">Pose Info</p>
+<button class="bigbutton" onmousedown="getPose()">Get Pose</button>
+<br>
+<button class="bigbutton" onmousedown="home()">Home</button>
+<br>
+<button class="bigbutton" onmousedown="test(0)">Test0</button>
+<button class="bigbutton" onmousedown="test(1)">Test1</button>
+<button class="bigbutton" onmousedown="test(2)">Test2</button>
+</body>
+</html>
